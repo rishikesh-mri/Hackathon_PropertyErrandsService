@@ -8,7 +8,7 @@ public class Unit
 
     public required string Name { get; set;}
     public int BuildingId { get; set; }
-    public required Building Building { get; set; }
+    public virtual Building Building { get; set; }
 
-    public ICollection<Tenant>? Tenants { get; set; }
+    public virtual ICollection<Tenant>? Tenants { get; set; }
 }
