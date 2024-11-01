@@ -13,18 +13,17 @@ var propSvc = new PropertyService();
 
 await foreach (var item in propertyConsumer.Messages())
 {
-    var payload = Encoding.ASCII.GetString(item.Data);
-    if (int.TryParse(payload, out var propertyId)) {
-        var property = await propSvc.GetPropertyAsync(propertyId);
-        if (property == null) {
-            await resultProducer.Send(Encoding.ASCII.GetBytes([]));
-            await propertyConsumer.Acknowledge(item);
-            continue;
-        }
-        var json = JsonSerializer.Serialize(property);
-        await resultProducer.Send(Encoding.ASCII.GetBytes(json));
+    var propertyName = Encoding.ASCII.GetString(item.Data);
 
+    var property = await propSvc.GetPropertyByNameAsync(propertyName);
+    if (property == null) {
+        await resultProducer.Send(Encoding.ASCII.GetBytes([]));
         await propertyConsumer.Acknowledge(item);
+        continue;
     }
+    var json = JsonSerializer.Serialize(property);
+    await resultProducer.Send(Encoding.ASCII.GetBytes(json));
+
+    await propertyConsumer.Acknowledge(item);
 }
 
